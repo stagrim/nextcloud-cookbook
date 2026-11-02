@@ -66,12 +66,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -441,42 +441,45 @@ fun RecipeDetailLayout(
                 val currentOnResetYield by rememberUpdatedState(onResetYield)
                 val currentGetIngredientAt by rememberUpdatedState(getIngredientAt)
 
-                val ingredientsAndDetails = remember {
-                    movableContentOf {
-                        if (currentRecipe.ingredients.isNotEmpty()) {
-                            Ingredients(
-                                ingredients = currentCalculatedIngredients.ifEmpty {
-                                    currentRecipe.ingredients.map { CalculatedIngredient(it.value, it.hasCorrectSyntax) }
-                                },
-                                onDecreaseYield = currentOnDecreaseYield,
-                                onIncreaseYield = currentOnIncreaseYield,
-                                onResetYield = currentOnResetYield,
-                                currentYield = currentYieldState,
-                                showResetButton = currentRecipe.yield != currentYieldState,
-                                isShowIngredientSyntaxIndicator = currentShowIndicator,
-                                getIngredientAt = currentGetIngredientAt,
-                            )
-                        }
-                        if (currentRecipe.nutrition != null) {
-                            Nutrition(currentRecipe.nutrition!!)
-                        }
-                        if (currentRecipe.tools.isNotEmpty()) {
-                            Tools(tools = currentRecipe.tools)
-                        }
-                    }
-                }
-                val instructionsContent = remember {
-                    movableContentOf {
-                        if (currentRecipe.instructions.isNotEmpty()) {
-                            Instructions(instructions = currentRecipe.instructions)
+                val ingredientsAndDetails =
+                    remember {
+                        movableContentOf {
+                            if (currentRecipe.ingredients.isNotEmpty()) {
+                                Ingredients(
+                                    ingredients =
+                                        currentCalculatedIngredients.ifEmpty {
+                                            currentRecipe.ingredients.map { CalculatedIngredient(it.value, it.hasCorrectSyntax) }
+                                        },
+                                    onDecreaseYield = currentOnDecreaseYield,
+                                    onIncreaseYield = currentOnIncreaseYield,
+                                    onResetYield = currentOnResetYield,
+                                    currentYield = currentYieldState,
+                                    showResetButton = currentRecipe.yield != currentYieldState,
+                                    isShowIngredientSyntaxIndicator = currentShowIndicator,
+                                    getIngredientAt = currentGetIngredientAt,
+                                )
+                            }
+                            if (currentRecipe.nutrition != null) {
+                                Nutrition(currentRecipe.nutrition!!)
+                            }
+                            if (currentRecipe.tools.isNotEmpty()) {
+                                Tools(tools = currentRecipe.tools)
+                            }
                         }
                     }
-                }
+                val instructionsContent =
+                    remember {
+                        movableContentOf {
+                            if (currentRecipe.instructions.isNotEmpty()) {
+                                Instructions(instructions = currentRecipe.instructions)
+                            }
+                        }
+                    }
 
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     val hasIngredientsOrDetails = recipe.ingredients.isNotEmpty() || recipe.nutrition != null || recipe.tools.isNotEmpty()
                     val hasInstructions = recipe.instructions.isNotEmpty()
-                    
+
                     if (maxWidth >= 600.dp && hasIngredientsOrDetails && hasInstructions) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
